@@ -1,9 +1,9 @@
-﻿using NServiceBus;
+﻿using Messages;
+using Microsoft.Extensions.Logging;
+using NServiceBus;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Messages;
-using Microsoft.Extensions.Logging;
 
 namespace Shipping.Integration;
 
@@ -21,7 +21,7 @@ class ShipWithAlpineHandler(ILogger<ShipWithAlpineHandler> logger) : IHandleMess
 
         await Task.Delay(waitingTime * 1000, CancellationToken.None);
 
-        await context.Reply(new ShipmentAcceptedByAlpine());
+        await context.Reply(new ShipmentAcceptedByAlpine() { OrderId = message.OrderId });
     }
 }
 

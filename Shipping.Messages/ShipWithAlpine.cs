@@ -6,8 +6,7 @@ public class ShipWithAlpine : ICommand
 {
     public string OrderId { get; set; }
 }
-
-public class YetAnotherMessage: IMessage
+public class ShipmentAcceptedByAlpine : IMessage
 {
-    public string Data { get; set; }
+    public string OrderId { get; set; }
 }

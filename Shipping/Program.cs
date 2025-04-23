@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Messages;
+using Microsoft.Extensions.Hosting;
 using NServiceBus;
 using System;
-using System.Threading.Tasks;
-using Messages;
 
 var endpointName = "Shipping";
 
@@ -54,6 +53,8 @@ endpointConfiguration.UsePersistence<LearningPersistence>();
 routing.RouteToEndpoint(typeof(ShipOrder), "Shipping");
 routing.RouteToEndpoint(typeof(ShipWithMaple), "Shipping");
 routing.RouteToEndpoint(typeof(ShipWithAlpine), "Shipping");
+routing.RouteToEndpoint(typeof(ShipWithClover), "Shipping");
+
 routing.RouteToEndpoint(typeof(YetAnotherMessage), "Shipping");
 
 

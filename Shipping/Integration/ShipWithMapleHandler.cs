@@ -1,9 +1,9 @@
-﻿using NServiceBus;
+﻿using Messages;
 using Microsoft.Extensions.Logging;
+using NServiceBus;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Messages;
 
 namespace Shipping.Integration;
 
@@ -21,13 +21,13 @@ class ShipWithMapleHandler(ILogger<ShipWithMapleHandler> logger) : IHandleMessag
 
         await Task.Delay(waitingTime * 1000, CancellationToken.None);
 
-        await context.Reply(new ShipmentAcceptedByMaple());
+        await context.Reply(new ShipmentAcceptedByMaple() { OrderId = message.OrderId });
     }
 
-    public Task Handle(YetAnotherMessage message, IMessageHandlerContext context)
-    {
-        return Task.CompletedTask;
-    }
+    //public Task Handle(YetAnotherMessage message, IMessageHandlerContext context)
+    //{
+    //    return Task.CompletedTask;
+    //}
 }
 
 #endregion
