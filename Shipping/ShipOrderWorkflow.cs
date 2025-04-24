@@ -14,6 +14,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
     IHandleMessages<ShipmentAcceptedByClover>,
     IHandleTimeouts<ShipOrderWorkflow.ShippingEscalation>
 {
+    private const int CountOfYetAnotherMessageType = 100;
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<ShipOrderWorkflowData> mapper)
     {
         mapper.MapSaga(saga => saga.OrderId)
@@ -26,7 +27,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
 
         // Execute order to ship with Maple
         await context.Send(new ShipWithMaple() { OrderId = Data.OrderId });
-        for (int i = 0; i <= 100; i++)
+        for (int i = 0; i <= CountOfYetAnotherMessageType; i++)
         {
             await context.Send(new YetAnotherMessage() { Data = $"{i} while handling started by ShipOrder" });
         }
@@ -88,7 +89,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
                 logger.LogInformation("Order [{OrderId}] - No answer from Maple, let's try Alpine.", Data.OrderId);
                 Data.ShipmentOrderSentToAlpine = true;
                 await context.Send(new ShipWithAlpine() { OrderId = Data.OrderId });
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= CountOfYetAnotherMessageType; i++)
                 {
                     await context.Send(new YetAnotherMessage() { Data = $"{i} from  Alpine timeout" });
                 }
@@ -101,7 +102,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
                 logger.LogInformation("Order [{OrderId}] - No answer from Alpine, trying Clover.", Data.OrderId);
                 Data.ShipmentOrderSentToClover = true;
                 await context.Send(new ShipWithClover() { OrderId = Data.OrderId });
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= CountOfYetAnotherMessageType; i++)
                 {
                     await context.Send(new YetAnotherMessage() { Data = $"{i} from  Clover timeout" });
                 }
