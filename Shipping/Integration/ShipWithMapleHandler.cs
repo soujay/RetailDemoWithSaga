@@ -24,10 +24,6 @@ class ShipWithMapleHandler(ILogger<ShipWithMapleHandler> logger) : IHandleMessag
         await context.Reply(new ShipmentAcceptedByMaple() { OrderId = message.OrderId });
     }
 
-    //public Task Handle(YetAnotherMessage message, IMessageHandlerContext context)
-    //{
-    //    return Task.CompletedTask;
-    //}
 }
 
 #endregion
