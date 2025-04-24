@@ -14,7 +14,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
     IHandleMessages<ShipmentAcceptedByClover>,
     IHandleTimeouts<ShipOrderWorkflow.ShippingEscalation>
 {
-    private const int CountOfYetAnotherMessageType = 100;
+    private const int CountOfYetAnotherMessageType = 5;
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<ShipOrderWorkflowData> mapper)
     {
         mapper.MapSaga(saga => saga.OrderId)
