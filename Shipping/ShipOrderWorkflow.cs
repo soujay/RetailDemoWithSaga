@@ -26,8 +26,10 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
 
         // Execute order to ship with Maple
         await context.Send(new ShipWithMaple() { OrderId = Data.OrderId });
-        await context.Send(new YetAnotherMessage() { Data = "1 while handling started by ShipOrder " });
-        await context.Send(new YetAnotherMessage() { Data = "2 while handling started by ShipOrder " });
+        for (int i = 0; i <= 100; i++)
+        {
+            await context.Send(new YetAnotherMessage() { Data = $"{i} while handling started by ShipOrder" });
+        }
 
         // Add timeout to escalate if Maple did not ship in time.
         await RequestTimeout(context, TimeSpan.FromSeconds(20), new ShippingEscalation());
@@ -86,8 +88,12 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
                 logger.LogInformation("Order [{OrderId}] - No answer from Maple, let's try Alpine.", Data.OrderId);
                 Data.ShipmentOrderSentToAlpine = true;
                 await context.Send(new ShipWithAlpine() { OrderId = Data.OrderId });
-                await context.Send(new YetAnotherMessage() { Data = "1 from timeout" });
-                await context.Send(new YetAnotherMessage() { Data = "2 from timeout" });
+                for (int i = 0; i <= 100; i++)
+                {
+                    await context.Send(new YetAnotherMessage() { Data = $"{i} from  Alpine timeout" });
+                }
+
+
                 await RequestTimeout(context, TimeSpan.FromSeconds(20), new ShippingEscalation());
             }
             else if (!Data.ShipmentAcceptedByAlpine && !Data.ShipmentOrderSentToClover)
@@ -95,8 +101,10 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
                 logger.LogInformation("Order [{OrderId}] - No answer from Alpine, trying Clover.", Data.OrderId);
                 Data.ShipmentOrderSentToClover = true;
                 await context.Send(new ShipWithClover() { OrderId = Data.OrderId });
-                await context.Send(new YetAnotherMessage() { Data = "1 from timeout" });
-                await context.Send(new YetAnotherMessage() { Data = "2 from timeout" });
+                for (int i = 0; i <= 100; i++)
+                {
+                    await context.Send(new YetAnotherMessage() { Data = $"{i} from  Clover timeout" });
+                }
                 await RequestTimeout(context, TimeSpan.FromMinutes(5), new ShippingEscalation());
             }
             else if (!Data.ShipmentAcceptedByAlpine && !Data.ShipmentAcceptedByClover)
