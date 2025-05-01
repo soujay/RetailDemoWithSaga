@@ -1,6 +1,6 @@
 ﻿using Messages;
-using NServiceBus;
 using Microsoft.Extensions.Logging;
+using NServiceBus;
 using System;
 using System.Threading.Tasks;
 
@@ -24,12 +24,12 @@ public class CustomerStatusPolicy(ILogger<CustomerStatusPolicy> logger) :
 
     public async Task Handle(OrderBilled message, IMessageHandlerContext context)
     {
-        logger.LogInformation("Customer {CustomerId} submitted order of {OrderValue}", Data.CustomerId, message.OrderValue);
+        logger.LogInformation("Customer {CustomerId} , customer name {CustomerName} submitted order of {OrderValue}", Data.CustomerId, message.BillType, message.OrderValue);
 
         Data.RunningTotal += message.OrderValue;
         await CheckForPreferredStatus(context);
 
-        await RequestTimeout(context, orderExpiryTimeout, new OrderExpired() { Amount = message.OrderValue });
+        await RequestTimeout(context, orderExpiryTimeout, new OrderExpired() { Amount = message.OrderValue, BillType = string.Empty });
     }
 
     public async Task Timeout(OrderExpired timeout, IMessageHandlerContext context)
@@ -56,6 +56,7 @@ public class CustomerStatusPolicy(ILogger<CustomerStatusPolicy> logger) :
     public class OrderExpired
     {
         public decimal Amount { get; set; }
+        public string BillType { get; set; }
     }
 }
 

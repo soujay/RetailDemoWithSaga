@@ -1,8 +1,8 @@
-﻿using NServiceBus;
+﻿using Messages;
 using Microsoft.Extensions.Logging;
+using NServiceBus;
 using System;
 using System.Threading.Tasks;
-using Messages;
 
 namespace Sales;
 
@@ -62,5 +62,6 @@ internal class BuyersRemorseIsOver
 public class BuyersRemorsePolicyData : ContainSagaData
 {
     public string CustomerId { get; set; }
+    public string[] ColorCode { get; set; } = ["blue", "silver"];
     public string OrderId { get; set; }
 }

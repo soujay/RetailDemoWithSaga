@@ -21,10 +21,11 @@ class DeliveryConfirmationSaga(ILogger<DeliveryConfirmationSaga> logger) :
             .ToMessage<DeliveryConfirmed>(message => message.OrderId);
     }
 
-    private async Task ShipmentAccepted(string orderId, string provider, IMessageHandlerContext context)
+    private async Task ShipmentAccepted(string orderId, string provider, string? shippingAddress, IMessageHandlerContext context)
     {
         Data.OrderId = orderId;
         Data.ShippingProvider = provider;
+        Data.ShippingProvider = shippingAddress;
         logger.LogInformation("Starting delivery tracking for Order [{OrderId}] with {Provider}", orderId, provider);
         await RequestTimeout(context, TimeSpan.FromHours(48), new DeliveryEscalation());
     }
@@ -32,7 +33,7 @@ class DeliveryConfirmationSaga(ILogger<DeliveryConfirmationSaga> logger) :
 
 
     public Task Handle(ShipmentAccepted message, IMessageHandlerContext context)
-    => ShipmentAccepted(message.OrderId, message.ShippingProvider, context);
+    => ShipmentAccepted(message.OrderId, message.ShippingProvider, null, context);
     public Task Handle(DeliveryConfirmed message, IMessageHandlerContext context)
     {
         logger.LogInformation("Order [{OrderId}] - Delivery confirmed by {Provider}", Data.OrderId, Data.ShippingProvider);
@@ -56,4 +57,13 @@ public class DeliveryConfirmationData : ContainSagaData
 {
     public string OrderId { get; set; }
     public string ShippingProvider { get; set; }
+    public Address ProviderAddress { get; set; } = new();
+}
+public class Address
+{
+    public string AddressLine1 { get; set; } = "ABC default street";
+    public string AddressLine2 { get; set; } = "#Unit 555";
+    public string City { get; set; } = "ParticularCity";
+    public string State { get; set; } = "CA";
+    public string ZipCode { get; set; } = "92694";
 }

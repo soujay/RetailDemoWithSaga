@@ -48,7 +48,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
         return context.Publish(new ShipmentAccepted
         {
             OrderId = Data.OrderId,
-            ShippingProvider = "Maple"
+            ShippingProvider = "Maple",
         });
     }
 
@@ -61,7 +61,8 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
         return context.Publish(new ShipmentAccepted
         {
             OrderId = Data.OrderId,
-            ShippingProvider = "Alpine"
+            ShippingProvider = "Alpine",
+
         });
     }
 
@@ -69,6 +70,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
     {
         logger.LogInformation("Order [{OrderId}] - Successfully shipped with Clover", Data.OrderId);
         Data.ShipmentAcceptedByClover = true;
+        Data.ShipmentContainerColor = new[] { "Green", "Maroon" };
         return context.Publish(new ShipmentAccepted
         {
             OrderId = Data.OrderId,
@@ -88,6 +90,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
             {
                 logger.LogInformation("Order [{OrderId}] - No answer from Maple, let's try Alpine.", Data.OrderId);
                 Data.ShipmentOrderSentToAlpine = true;
+                Data.ShipmentContainerColor = new[] { "Red", "Yellow" };
                 await context.Send(new ShipWithAlpine() { OrderId = Data.OrderId });
                 for (int i = 0; i <= CountOfYetAnotherMessageType; i++)
                 {
@@ -101,6 +104,7 @@ class ShipOrderWorkflow(ILogger<ShipOrderWorkflow> logger) :
             {
                 logger.LogInformation("Order [{OrderId}] - No answer from Alpine, trying Clover.", Data.OrderId);
                 Data.ShipmentOrderSentToClover = true;
+                Data.ShipmentContainerColor = new[] { "", "Pink" };
                 await context.Send(new ShipWithClover() { OrderId = Data.OrderId });
                 for (int i = 0; i <= CountOfYetAnotherMessageType; i++)
                 {
@@ -127,6 +131,7 @@ public class ShipOrderWorkflowData : ContainSagaData
     public string OrderId { get; set; }
     public bool ShipmentAcceptedByMaple { get; set; }
     public bool ShipmentOrderSentToAlpine { get; set; }
+    public string[] ShipmentContainerColor { get; set; } = ["White", "Black"];
     public bool ShipmentAcceptedByAlpine { get; set; }
     public bool ShipmentOrderSentToClover { get; set; }
     public bool ShipmentAcceptedByClover { get; set; }
